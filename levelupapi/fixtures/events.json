@@ -3,7 +3,7 @@
         "model": "levelupapi.event",
         "pk": 1,
         "fields": {
-            "game": 1,
+            "game": 4,
 			"description": "Video game",
             "date": "2022-05-21",
 			"time": "9:00",
@@ -14,7 +14,7 @@
         "model": "levelupapi.event",
         "pk": 2,
         "fields": {
-            "game": 1,
+            "game": 4,
 			"description": "Video game Social",
             "date": "2022-05-28",
 			"time": "13:00",

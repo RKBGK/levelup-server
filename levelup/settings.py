@@ -28,9 +28,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
+
+# UPDATE THIS
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,9 +43,9 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'levelupapi',
-    
 ]
 
+# THIS IS NEW
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
@@ -54,12 +55,9 @@ REST_FRAMEWORK = {
     ],
 }
 
-CORS_ORIGIN_WHITELIST = (
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:5555'
-)
+# THIS IS NEW
 
+# UPDATE THIS
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -70,6 +68,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5555',
+    'http://127.0.0.1:8000'
+)
 
 ROOT_URLCONF = 'levelup.urls'
 

@@ -33,7 +33,31 @@ class EventView(ViewSet):
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data)
 
-
+    def update_old(self, request, pk):
+        event = Event.objects.get(pk=pk) 
+        event.description = request.data["description"]
+        event.date = request.data["date"]
+        event.time = request.data["time"]
+        game = Game.objects.get(pk=request.data["game"])
+        organizer = Gamer.objects.get(pk=request.data["organizer"])
+        event.game = game
+        event.organizer = organizer
+        event.save()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+    
+    def update(self, request, pk):
+        event = Event.objects.get(pk=pk) 
+        serializer = CreateEventSerializer(event, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        event.save()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+    
+    def destroy(self, request, pk):
+        event = Event.objects.get(pk=pk)
+        event.delete()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+        
     
     # def create(self, request):
 
