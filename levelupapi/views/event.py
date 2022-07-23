@@ -1,9 +1,9 @@
 """View module for handling requests about game types"""
-from multiprocessing import Event
-from django.http import HttpResponseServerError
+
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
+from rest_framework.decorators import action
 from levelupapi.models import Event
 from levelupapi.models.game_type import GameType
 from levelupapi.models.game import Game
@@ -26,24 +26,31 @@ class EventView(ViewSet):
     # @permission_classes([AllowAny])
     def list(self, request):
         events = Event.objects.all()
+        # in postman query has ?game=8
         event_game = request.query_params.get('game', None)
         if event_game is not None:
             events = events.filter(game_id=event_game)
             
+         # Set the `joined` property on every event
+        for event in events:
+            # Check to see if the gamer is in the attendees list on the event
+            gamer = Gamer.objects.get(user=request.auth.user)
+            event.joined = gamer in event.attendees.all()                  
+            
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data)
 
-    def update_old(self, request, pk):
-        event = Event.objects.get(pk=pk) 
-        event.description = request.data["description"]
-        event.date = request.data["date"]
-        event.time = request.data["time"]
-        game = Game.objects.get(pk=request.data["game"])
-        organizer = Gamer.objects.get(pk=request.data["organizer"])
-        event.game = game
-        event.organizer = organizer
-        event.save()
-        return Response(None, status=status.HTTP_204_NO_CONTENT)
+    # def update_old(self, request, pk):
+    #     event = Event.objects.get(pk=pk) 
+    #     event.description = request.data["description"]
+    #     event.date = request.data["date"]
+    #     event.time = request.data["time"]
+    #     game = Game.objects.get(pk=request.data["game"])
+    #     organizer = Gamer.objects.get(pk=request.data["organizer"])
+    #     event.game = game
+    #     event.organizer = organizer
+    #     event.save()
+    #     return Response(None, status=status.HTTP_204_NO_CONTENT)
     
     def update(self, request, pk):
         event = Event.objects.get(pk=pk) 
@@ -58,6 +65,26 @@ class EventView(ViewSet):
         event.delete()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
         
+    @action(methods=['post'], detail=True)
+    def signup(self, request, pk):
+        """Post request for a user to sign up for an event"""
+    
+        gamer = Gamer.objects.get(user=request.auth.user)
+        event = Event.objects.get(pk=pk)
+        event.attendees.add(gamer)
+        return Response({'message': 'Gamer added'}, status=status.HTTP_201_CREATED)
+    
+    @action(methods=['delete'], detail=True)
+    def leave(self, request, pk):
+        """Post request for a user to sign up for an event"""
+    
+        gamer = Gamer.objects.get(user=request.auth.user)
+        event = Event.objects.get(pk=pk)
+        event.attendees.remove(gamer)
+        return Response({'message': 'Gamer removed'}, status=status.HTTP_201_CREATED)
+    
+
+
     
     # def create(self, request):
 
@@ -88,7 +115,9 @@ class EventSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Event
-        fields = ('id', 'description','date','time','game','organizer')
+        fields = ('id', 'game', 'organizer',
+          'description', 'date', 'time', 'attendees',
+          'joined')
         depth = 2
         
 class CreateEventSerializer(serializers.ModelSerializer):
