@@ -158,7 +158,7 @@ class GameTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # Initiate GET request and capture the response
-        # response = self.client.get(url)
+        response = self.client.get(url)
 
         # Assert that the response status code is 404 (NOT FOUND)
-        # self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

@@ -20,7 +20,7 @@ class EventView(ViewSet):
             events = Event.objects.get(pk=pk)
             serializer = EventSerializer(events)
             return Response(serializer.data)
-        except Event as ex:
+        except:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
         
     # @permission_classes([AllowAny])

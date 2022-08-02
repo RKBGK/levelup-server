@@ -16,9 +16,14 @@ class GameView(ViewSet):
     
     # @permission_classes([AllowAny])
     def retrieve(self, request, pk):
-        games = Game.objects.get(pk=pk)
-        serializer = GameSerializer(games)
-        return Response(serializer.data)
+        try:
+            games = Game.objects.get(pk=pk)
+            serializer = GameSerializer(games)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Game.DoesNotExist:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+        # except:
+        #     return Response({}, status=status.HTTP_404_NOT_FOUND)
         
     # @permission_classes([AllowAny])
     def list(self, request):
